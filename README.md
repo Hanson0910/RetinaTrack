@@ -2,6 +2,10 @@
 
 The pytorch implement of the retina track  original paper link: <https://arxiv.org/abs/2003.13870>
 
+### Network
+
+<img src="https://github.com/Hanson0910/RetinaTrack/blob/main/source/RetinaTrack.png" width="640">
+
 ## Update Log
 
 [2020-07-23] Build the RetinaTrack Network.
@@ -10,6 +14,7 @@ The pytorch implement of the retina track  original paper link: <https://arxiv.o
 
 - build the loss with the network
 - create a complete training process
+
 
 ## References
 
