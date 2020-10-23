@@ -6,9 +6,13 @@ The pytorch implement of the retina track  original paper link: <https://arxiv.o
 
 <img src="https://github.com/Hanson0910/RetinaTrack/blob/main/source/RetinaTrack.png" width="640">
 
+## Requirements
+- python3.7
+- pytorch 1.5
+
 ## Update Log
 
-[2020-07-23] Build the RetinaTrack Network.
+[2020-10-23] Build the RetinaTrack Network.
 
 ## TODO
 
