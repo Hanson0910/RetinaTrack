@@ -2,7 +2,7 @@
 cfg_re50 = {
     'name': 'Resnet50',
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
-    'numanchor_per_stage': 3,
+    'anchorNum_per_stage': 2,
     'steps': [8, 16, 32],
     'variance': [0.1, 0.2],
     'clip': False,
@@ -13,7 +13,7 @@ cfg_re50 = {
     'epoch': 100,
     'decay1': 70,
     'decay2': 90,
-    'image_size': 840,
+    'image_size': [640,640],
     'pretrain': True,
     'return_layers': {'layer2': 1, 'layer3': 2, 'layer4': 3},
     'in_channel': 256,

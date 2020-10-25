@@ -6,9 +6,9 @@ import torchvision.models as models
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-def task_shared(inp, oup, stride = 1, leaky = 0, m1 = 3,numanchor = 3):
-    peranchor_feature,allanchor_feature = [],[]
-    for i in range(numanchor):
+def task_shared(inp, oup, stride = 1, leaky = 0, m1 = 3,anchorNum = 3):
+    peranchor_feature,allanchor_feature = nn.ModuleList(),nn.ModuleList()
+    for i in range(anchorNum):
         for j in range(m1):
             peranchor_feature.append(conv_bn(inp,oup,stride,leaky))
         allanchor_feature.append(nn.Sequential(*peranchor_feature))

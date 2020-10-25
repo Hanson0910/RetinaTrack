@@ -29,7 +29,7 @@ class RetinaTrackNet(nn.Module):
         else:
             pass
         
-        numanchor = cfg['numanchor_per_stage'] ##not total anchor,indicate per stage anchors
+        anchorNum = cfg['anchorNum_per_stage'] ##not total anchor,indicate per stage anchors
         in_channels_stage2 = cfg['in_channel']
         in_channels_list = [
             in_channels_stage2 * 2,
@@ -42,15 +42,18 @@ class RetinaTrackNet(nn.Module):
         self.ssh2 = SSH(out_channels, out_channels)
         self.ssh3 = SSH(out_channels, out_channels)
         ##task shared
-        self.task_shared = task_shared(out_channels,out_channels,numanchor = numanchor)
+        self.task_shared = task_shared(out_channels,out_channels,anchorNum = anchorNum)
         ##task specific
         self.cls_task = task_specific_cls(out_channels,out_channels)
         self.loc_task = task_specific_loc(out_channels,out_channels)
         self.emb_task = task_specific_emb(out_channels,out_channels)
         ###head
-        self.cls_heads = make_cls_head(inp=out_channels,numstage=len(in_channels_list),numanchor=numanchor)
-        self.loc_heads = make_loc_head(inp=out_channels,numstage=len(in_channels_list),numanchor=numanchor)
-        self.emb_heads = make_emb_head(inp=out_channels,numstage=len(in_channels_list),numanchor=numanchor)
+        self.cls_heads = make_cls_head(inp=out_channels,fpnNum=len(in_channels_list),anchorNum=anchorNum)
+        self.loc_heads = make_loc_head(inp=out_channels,fpnNum=len(in_channels_list),anchorNum=anchorNum)
+        self.emb_heads = make_emb_head(inp=out_channels,fpnNum=len(in_channels_list),anchorNum=anchorNum)
+
+        ###classifier ,ndim of emb dims and num of ids
+        self.classifier = nn.Linear(256, 7)
 
 
     def forward(self, inputs):
@@ -72,23 +75,29 @@ class RetinaTrackNet(nn.Module):
         ##task specific
         cls_heads,loc_heads,emb_heads = [],[],[]
         for i, per_fpn_features in enumerate(features):
-            per_anchoer_cls_head,per_anchoer_loc_head,per_anchoer_emb_head = [],[],[]
             for j, per_anchor_feature in enumerate(per_fpn_features):
                 cls_task_feature = self.cls_task(per_anchor_feature)
                 loc_task_feature = self.loc_task(per_anchor_feature)
                 emb_task_feature = self.emb_task(per_anchor_feature)
-                cls_head = self.cls_heads[i * len(features) + j](cls_task_feature)
-                loc_head = self.loc_heads[i * len(features) + j](loc_task_feature)
-                emb_head = self.emb_heads[i * len(features) + j](emb_task_feature)
-                per_anchoer_cls_head.append(cls_head)
-                per_anchoer_loc_head.append(loc_head)
-                per_anchoer_emb_head.append(emb_head)
-            cls_heads.append(per_anchoer_cls_head)
-            loc_heads.append(per_anchoer_loc_head)
-            emb_heads.append(per_anchoer_emb_head)
-        return cls_heads,loc_heads,emb_heads
+                ##cls feature,only one class but with background total class is two
+                cls_head = self.cls_heads[i * len(per_fpn_features) + j](cls_task_feature)
+                cls_head = cls_head.permute(0, 2, 3, 1).contiguous().view(cls_head.shape[0], -1, 2)
+                ##loc frature,(x,y,w,h)
+                loc_head = self.loc_heads[i * len(per_fpn_features) + j](loc_task_feature)
+                loc_head = loc_head.permute(0, 2, 3, 1).contiguous().view(loc_head.shape[0], -1, 4)
+                ##emb feature with 256 dim
+                emb_head = self.emb_heads[i * len(per_fpn_features) + j](emb_task_feature)
+                emb_head = emb_head.permute(0, 2, 3, 1).contiguous().view(emb_head.shape[0], -1, 256)
+                
+                cls_heads.append(cls_head)
+                loc_heads.append(loc_head)
+                emb_heads.append(emb_head)
         
-
+        bbox_regressions = torch.cat([feature for i, feature in enumerate(loc_heads)], dim=1)
+        classifications = torch.cat([feature for i, feature in enumerate(cls_heads)], dim=1)
+        emb_features = torch.cat([feature for i, feature in enumerate(emb_heads)], dim=1)
+        classifier = self.classifier(emb_features)
+        return [bbox_regressions,classifications,classifier]
 
 if __name__ == '__main__':
     cfg = cfg_re50
