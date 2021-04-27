@@ -33,7 +33,7 @@ The pytorch implement of the retina track  original paper link: <https://arxiv.o
 - private the mult vehicle tracking trained model
 
 ## Result
-<img src="https://github.com/Hanson0910/RetinaTrack/tree/main/source/result_img.jpg" width="640">
+![image](https://github.com/Hanson0910/RetinaTrack/tree/main/source/result_img.jpg)
 
 ## References
 
