@@ -3,8 +3,7 @@
 The pytorch implement of the retina track  original paper link: <https://arxiv.org/abs/2003.13870>
 
 ### Network
-
-<img src="https://github.com/Hanson0910/RetinaTrack/tree/main/source/RetinaTrack.png" width="640">
+![image](https://github.com/Hanson0910/RetinaTrack/tree/main/source/RetinaTrack.png)
 
 ## Requirements
 - python3.7
