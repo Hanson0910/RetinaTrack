@@ -1,6 +1,7 @@
 ﻿# RetinaTrack Pytorch
 
 The pytorch implement of the retina track  original paper link: <https://arxiv.org/abs/2003.13870>
+知乎链接: <https://zhuanlan.zhihu.com/p/269571970>
 
 ### Network
 ![image](https://github.com/Hanson0910/RetinaTrack/blob/main/source/RetinaTrack.png)
