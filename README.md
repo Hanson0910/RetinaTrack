@@ -31,8 +31,8 @@ The pytorch implement of the retina track  original paper link: <https://arxiv.o
 
 ## TODO
 - [x] build the loss with the network
-- create the dataloader and buile the complete training process
-- private the mult vehicle tracking trained model
+- [x] create the dataloader and buile the complete training process
+- [x] private the mult vehicle tracking trained model
 
 ## Result
 ![image](https://github.com/Hanson0910/RetinaTrack/blob/main/source/result_img.jpg)
